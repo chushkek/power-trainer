@@ -74,18 +74,20 @@
             background: var(--secondary);
             border: none;
             border-radius: 12px;
-            padding: 14px 16px;
+            padding: 16px;
             font-size: 15px;
             font-weight: 500;
             color: var(--text);
             cursor: pointer;
             transition: transform 0.1s, background var(--transition), color var(--transition);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 6px;
             user-select: none;
             box-shadow: var(--shadow);
+            width: 100%;
         }
         .btn:active {
             transform: scale(0.96);
@@ -102,12 +104,41 @@
         .btn.danger:active { background: #c62828; }
         .btn.small { padding: 8px 14px; font-size: 14px; }
 
+        /* Квадратные кнопки в главном меню */
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 12px;
         }
+        .square-btn {
+            aspect-ratio: 1 / 1;   /* делает кнопку квадратной */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 12px 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+            cursor: pointer;
+            transition: transform 0.1s, background var(--transition), color var(--transition);
+            user-select: none;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        .square-btn:active {
+            transform: scale(0.96);
+            background: var(--accent);
+            color: white;
+        }
+        .square-btn .emoji {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+
         .card {
             background: var(--card);
             border-radius: 12px;
@@ -217,18 +248,18 @@
 <div id="app">
     <!-- Главное меню -->
     <div id="mainMenu" class="section active">
-        <h1>🏋️‍♂️ Тренер</h1>
+        <h1>🏋️‍♂️ Powerlifting Coach</h1>
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="🔍 Поиск функций..." oninput="searchFunctions()">
             <div id="searchResults" class="search-results hidden"></div>
         </div>
         <div class="grid-2" id="menuGrid">
-            <button class="btn" onclick="navigate('programs')">📋 Программы</button>
-            <button class="btn" onclick="navigate('custom')">🛠️ Свой сплит</button>
-            <button class="btn" onclick="navigate('calc1rm')">🧮 Макс. вес</button>
-            <button class="btn" onclick="navigate('calcwork')">⚖️ Рабочий вес</button>
-            <button class="btn" onclick="navigate('timer')">⏱️ Таймер</button>
-            <button class="btn" onclick="navigate('history')">📈 История</button>
+            <div class="square-btn" onclick="navigate('programs')"><span class="emoji">📋</span>Программы</div>
+            <div class="square-btn" onclick="navigate('custom')"><span class="emoji">🛠️</span>Свой сплит</div>
+            <div class="square-btn" onclick="navigate('calc1rm')"><span class="emoji">🧮</span>Макс. вес</div>
+            <div class="square-btn" onclick="navigate('calcwork')"><span class="emoji">⚖️</span>Рабочий вес</div>
+            <div class="square-btn" onclick="navigate('timer')"><span class="emoji">⏱️</span>Таймер</div>
+            <div class="square-btn" onclick="navigate('history')"><span class="emoji">📈</span>История</div>
         </div>
     </div>
 
@@ -244,7 +275,6 @@
     <div id="custom" class="section">
         <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
         <h2>Конструктор сплита</h2>
-        <p>Добавляйте дни и упражнения вручную.</p>
         <div id="splitDays"></div>
         <button class="btn accent" onclick="addDay()" style="margin-bottom:12px;">➕ Добавить день</button>
         <button id="saveSplitBtn" class="btn accent" onclick="saveSplit()">💾 Сохранить сплит</button>
@@ -264,7 +294,7 @@
                 <input type="number" id="newExReps" placeholder="Повт." style="flex:1">
                 <input type="number" id="newExWeight" placeholder="Кг" style="flex:1">
             </div>
-            <div class="row" style="gap:8px;">
+            <div class="row" style="gap:8px; margin-top:8px;">
                 <button class="btn accent small" onclick="confirmExercise()">✅ Добавить</button>
                 <button class="btn small" onclick="cancelExercise()">Отмена</button>
             </div>
@@ -325,18 +355,14 @@
 </div>
 
 <script>
-    const app = document.getElementById('app');
     let currentDayIndex = null;
-    let currentSplit = { days: [] }; // { days: [{ name: "Пн", exercises: [...] }] }
+    let currentSplit = { days: [] };
 
     function navigate(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        // подсветка нижнего меню
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const map = {
-            mainMenu: 0, programs: 1, custom: 2, timer: 3, history: 4
-        };
+        const map = { mainMenu:0, programs:1, custom:2, timer:3, history:4 };
         if (map[id] !== undefined) {
             document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
         }
@@ -346,7 +372,6 @@
         if (id === 'custom') renderSplit();
     }
 
-    // ========== ПОИСК ==========
     function searchFunctions() {
         const query = document.getElementById('searchInput').value.toLowerCase().trim();
         const results = document.getElementById('searchResults');
@@ -360,37 +385,20 @@
             { name: 'История', section: 'history' }
         ];
         const filtered = functions.filter(f => f.name.toLowerCase().includes(query));
-        results.innerHTML = '';
-        if (filtered.length === 0) {
-            results.innerHTML = '<div class="result-item" style="cursor:default;">Ничего не найдено</div>';
-        } else {
-            filtered.forEach(f => {
-                const div = document.createElement('div');
-                div.className = 'result-item';
-                div.textContent = f.name;
-                div.onclick = () => navigate(f.section);
-                results.appendChild(div);
-            });
-        }
+        results.innerHTML = filtered.length === 0 ? '<div class="result-item">Ничего не найдено</div>' : filtered.map(f => `<div class="result-item" onclick="navigate('${f.section}')">${f.name}</div>`).join('');
         results.classList.remove('hidden');
     }
 
-    // ========== ТЕМА ==========
     function toggleTheme() {
         document.body.classList.toggle('light-theme');
-        const icon = document.getElementById('themeIcon');
-        if (document.body.classList.contains('light-theme')) {
-            icon.textContent = '☀️';
-        } else {
-            icon.textContent = '🌙';
-        }
+        document.getElementById('themeIcon').textContent = document.body.classList.contains('light-theme') ? '☀️' : '🌙';
     }
 
-    // ========== ПРОГРАММЫ ==========
+    // Программы
     const programs = [
         {
             name: "Starting Strength",
-            desc: "Классическая программа для новичков. Три тренировки в неделю.",
+            desc: "Классическая программа для новичков.",
             days: [
                 { name: "Тренировка А", exercises: [{name:"Присед", sets:3, reps:5, weight:60},{name:"Жим лёжа", sets:3, reps:5, weight:40},{name:"Становая тяга", sets:1, reps:5, weight:80}] },
                 { name: "Тренировка Б", exercises: [{name:"Присед", sets:3, reps:5, weight:60},{name:"Армейский жим", sets:3, reps:5, weight:30},{name:"Становая тяга", sets:1, reps:5, weight:80}] }
@@ -400,9 +408,9 @@
             name: "Madcow 5×5",
             desc: "Линейная прогрессия для среднего уровня.",
             days: [
-                { name: "Понедельник", exercises: [{name:"Присед", sets:5, reps:5, weight:70},{name:"Жим лёжа", sets:5, reps:5, weight:50},{name:"Тяга в наклоне", sets:5, reps:5, weight:50}] },
-                { name: "Среда", exercises: [{name:"Присед (лёгкий)", sets:5, reps:5, weight:60},{name:"Армейский жим", sets:5, reps:5, weight:35},{name:"Становая тяга", sets:5, reps:5, weight:80}] },
-                { name: "Пятница", exercises: [{name:"Присед", sets:3, reps:5, weight:80},{name:"Жим лёжа", sets:3, reps:5, weight:60},{name:"Тяга в наклоне", sets:3, reps:5, weight:60}] }
+                { name: "Пн", exercises: [{name:"Присед", sets:5, reps:5, weight:70},{name:"Жим лёжа", sets:5, reps:5, weight:50},{name:"Тяга в наклоне", sets:5, reps:5, weight:50}] },
+                { name: "Ср", exercises: [{name:"Присед (лёгкий)", sets:5, reps:5, weight:60},{name:"Армейский жим", sets:5, reps:5, weight:35},{name:"Становая тяга", sets:5, reps:5, weight:80}] },
+                { name: "Пт", exercises: [{name:"Присед", sets:3, reps:5, weight:80},{name:"Жим лёжа", sets:3, reps:5, weight:60},{name:"Тяга в наклоне", sets:3, reps:5, weight:60}] }
             ]
         },
         {
@@ -443,9 +451,9 @@
         document.getElementById('programDetails').innerHTML = html;
     }
 
-    // ========== КОНСТРУКТОР СПЛИТА ==========
-    function addDay(name = '') {
-        const dayName = name || prompt('Название дня (например, Пн или Верх тела):', 'День ' + (currentSplit.days.length+1));
+    // Конструктор сплита
+    function addDay() {
+        const dayName = prompt('Название дня (например, Пн или Верх тела):', 'День ' + (currentSplit.days.length+1));
         if (!dayName) return;
         currentSplit.days.push({ name: dayName, exercises: [] });
         renderSplit();
@@ -490,73 +498,50 @@
         renderSplit();
     }
 
-    function cancelExercise() {
-        document.getElementById('exerciseForm').classList.add('hidden');
-    }
-
-    function removeExercise(dayIdx, exIdx) {
-        currentSplit.days[dayIdx].exercises.splice(exIdx, 1);
-        renderSplit();
-    }
-
-    function deleteDay(dayIdx) {
-        currentSplit.days.splice(dayIdx, 1);
-        renderSplit();
-    }
+    function cancelExercise() { document.getElementById('exerciseForm').classList.add('hidden'); }
+    function removeExercise(dayIdx, exIdx) { currentSplit.days[dayIdx].exercises.splice(exIdx, 1); renderSplit(); }
+    function deleteDay(dayIdx) { currentSplit.days.splice(dayIdx, 1); renderSplit(); }
 
     function saveSplit() {
         if (currentSplit.days.length === 0) return alert('Добавьте хотя бы один день');
         const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
-        history.unshift({
-            date: new Date().toLocaleString(),
-            type: 'custom',
-            days: currentSplit.days
-        });
+        history.unshift({ date: new Date().toLocaleString(), type: 'custom', days: currentSplit.days });
         localStorage.setItem('powerHistory', JSON.stringify(history));
         alert('Сплит сохранён в истории!');
     }
 
-    // ========== КАЛЬКУЛЯТОРЫ ==========
+    // Калькуляторы
     function calculateMaxWeight() {
         const w = parseFloat(document.getElementById('rmWeight').value);
         const r = parseInt(document.getElementById('rmReps').value);
         if (!w || !r) return;
-        const max = w * (1 + r / 30);
-        document.getElementById('rmResult').textContent = `Максимальный вес: ${max.toFixed(1)} кг`;
+        document.getElementById('rmResult').textContent = `Максимальный вес: ${(w * (1 + r / 30)).toFixed(1)} кг`;
     }
 
     function calculateWorkingWeight() {
-        const oneRM = parseFloat(document.getElementById('oneRM').value);
+        const rm = parseFloat(document.getElementById('oneRM').value);
         const reps = parseInt(document.getElementById('targetReps').value);
-        if (!oneRM || !reps) return;
-        const weight = oneRM * 30 / (30 + reps);
-        document.getElementById('workResult').textContent = `Вес на ${reps} повт.: ${weight.toFixed(1)} кг`;
+        if (!rm || !reps) return;
+        document.getElementById('workResult').textContent = `Вес на ${reps} повт.: ${(rm * 30 / (30 + reps)).toFixed(1)} кг`;
     }
 
-    // ========== ТАЙМЕР ==========
+    // Таймер
     let timerInterval;
     function startTimer() {
         clearInterval(timerInterval);
-        let m = parseInt(document.getElementById('timerMinutes').value) || 0;
-        let s = parseInt(document.getElementById('timerSeconds').value) || 0;
-        let total = m * 60 + s;
+        let m = parseInt(document.getElementById('timerMinutes').value)||0;
+        let s = parseInt(document.getElementById('timerSeconds').value)||0;
+        let total = m*60 + s;
         if (total <= 0) return;
         timerInterval = setInterval(() => {
-            if (total <= 0) {
-                clearInterval(timerInterval);
-                try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e) {}
-                return;
-            }
+            if (total <= 0) { clearInterval(timerInterval); try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e) {} return; }
             total--;
-            const min = Math.floor(total / 60);
-            const sec = total % 60;
-            document.getElementById('timer-display').textContent = 
-                `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+            document.getElementById('timer-display').textContent = `${Math.floor(total/60).toString().padStart(2,'0')}:${(total%60).toString().padStart(2,'0')}`;
         }, 1000);
     }
     function stopTimer() { clearInterval(timerInterval); }
 
-    // ========== ИСТОРИЯ ==========
+    // История
     function renderHistory() {
         const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
         const list = document.getElementById('historyList');
@@ -572,12 +557,8 @@
     }
     function clearHistory() { localStorage.removeItem('powerHistory'); renderHistory(); }
 
-    // Инициализация Telegram
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
-
-    // Начальная загрузка
-    renderPrograms();
 </script>
 </body>
 </html>
