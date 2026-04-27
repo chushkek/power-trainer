@@ -6,47 +6,243 @@
     <title>Powerlifting Coach</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Telegram цветовая схема */
         :root {
-            --tg-theme-bg-color: var(--tg-theme-bg-color, #fff);
-            --tg-theme-text-color: var(--tg-theme-text-color, #222);
-            --tg-theme-hint-color: var(--tg-theme-hint-color, #aaa);
-            --tg-theme-link-color: var(--tg-theme-link-color, #2678b6);
-            --tg-theme-button-color: var(--tg-theme-button-color, #50a8eb);
-            --tg-theme-button-text-color: var(--tg-theme-button-text-color, #fff);
-            --tg-theme-secondary-bg-color: var(--tg-theme-secondary-bg-color, #f0f2f5);
+            --tg-theme-bg-color: var(--tg-theme-bg-color, #ffffff);
+            --tg-theme-text-color: var(--tg-theme-text-color, #1a1a2e);
+            --tg-theme-hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --tg-theme-link-color: var(--tg-theme-link-color, #0a84ff);
+            --tg-theme-button-color: var(--tg-theme-button-color, #007aff);
+            --tg-theme-button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --tg-theme-secondary-bg-color: var(--tg-theme-secondary-bg-color, #f2f2f7);
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 16px; }
-        h1, h2 { margin-bottom: 12px; }
-        .menu { display: flex; flex-direction: column; gap: 8px; }
-        .menu button { padding: 12px; border: none; border-radius: 10px; background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color); font-size: 16px; text-align: left; cursor: pointer; transition: 0.2s; }
-        .menu button:hover, .menu button:active { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+            color: var(--tg-theme-text-color);
+            padding: 20px 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #0059b3, #007aff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a2e;
+        }
+
+        /* Навигация */
         .section { display: none; }
         .section.active { display: block; }
-        .back-btn { background: none; border: none; color: var(--tg-theme-link-color); font-size: 16px; cursor: pointer; margin-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
-        .card { background: var(--tg-theme-secondary-bg-color); padding: 12px; border-radius: 8px; text-align: center; }
-        .card button { margin-top: 8px; padding: 6px 12px; border: none; border-radius: 6px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); cursor: pointer; }
-        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--tg-theme-secondary-bg-color); border-radius: 8px; margin-bottom: 8px; }
-        input, select { padding: 8px; border: 1px solid var(--tg-theme-hint-color); border-radius: 6px; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #007aff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        /* Карточки меню */
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .menu button {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 17px;
+            font-weight: 500;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            color: #1a1a2e;
+        }
+        .menu button:hover, .menu button:active {
+            background: #007aff;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            transform: translateY(-1px);
+        }
+        .menu button .emoji-big {
+            font-size: 24px;
+        }
+
+        /* Карточки в сетке */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .card strong {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .card p {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .card button {
+            background: #007aff;
+            border: none;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: background 0.2s;
+        }
+        .card button:hover { background: #005bbf; }
+
+        /* Упражнения */
+        .exercise-item {
+            background: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            font-size: 15px;
+        }
+        .exercise-item button {
+            background: #ff3b30;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Формы и инпуты */
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            transition: border 0.2s;
+        }
+        input:focus { border-color: #007aff; outline: none; }
+
+        button {
+            border: none;
+            background: #007aff;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
+            margin-top: 8px;
+        }
+        button:hover { background: #005bbf; }
+        button.secondary {
+            background: #f2f2f7;
+            color: #1a1a2e;
+        }
+        button.secondary:hover { background: #e5e5ea; }
+        button.danger {
+            background: #ff3b30;
+            margin-top: 12px;
+        }
+        button.danger:hover { background: #cc0000; }
+
+        /* Таймер */
+        #timer-display {
+            font-size: 36px;
+            font-weight: 700;
+            margin: 20px 0;
+            text-align: center;
+            color: #007aff;
+        }
+        .timer-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .timer-row input {
+            flex: 1;
+        }
+
+        /* История */
+        .log-entry {
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        /* Скрытие */
         .hidden { display: none; }
-        #timer-display { font-size: 24px; margin: 12px 0; }
-        .log-entry { margin: 4px 0; font-size: 14px; }
+
+        /* Кнопка назад в программах */
+        #programWeeks {
+            margin: 16px 0;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <!-- Главное меню -->
         <div id="mainMenu" class="section active">
-            <h1>🏋️ Powerlifting Coach</h1>
+            <h1>🏋️‍♂️ Powerlifting Coach</h1>
             <div class="menu">
-                <button onclick="navigate('programs')">📋 Программы тренировок</button>
-                <button onclick="navigate('custom')">🛠️ Создать свою тренировку</button>
-                <button onclick="navigate('calc1rm')">🧮 Калькулятор 1ПМ</button>
-                <button onclick="navigate('calcwork')">⚖️ Расчёт рабочего веса</button>
-                <button onclick="navigate('timer')">⏱️ Таймер отдыха</button>
-                <button onclick="navigate('history')">📈 История тренировок</button>
+                <button onclick="navigate('programs')"><span class="emoji-big">📋</span> Программы тренировок</button>
+                <button onclick="navigate('custom')"><span class="emoji-big">🛠️</span> Создать свою тренировку</button>
+                <button onclick="navigate('calc1rm')"><span class="emoji-big">🧮</span> Калькулятор 1ПМ</button>
+                <button onclick="navigate('calcwork')"><span class="emoji-big">⚖️</span> Расчёт рабочего веса</button>
+                <button onclick="navigate('timer')"><span class="emoji-big">⏱️</span> Таймер отдыха</button>
+                <button onclick="navigate('history')"><span class="emoji-big">📈</span> История тренировок</button>
             </div>
         </div>
 
@@ -56,9 +252,9 @@
             <h2>Выберите программу</h2>
             <div id="programsList" class="grid"></div>
             <div id="programDetails" class="hidden">
-                <p id="programDesc"></p>
+                <p id="programDesc" style="font-size:15px; color:#555; margin-bottom:12px;"></p>
                 <div id="programWeeks"></div>
-                <button onclick="navigate('programs')">⬅️ Все программы</button>
+                <button onclick="navigate('programs')" class="secondary">⬅️ Все программы</button>
             </div>
         </div>
 
@@ -67,9 +263,9 @@
             <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
             <h2>Ваша тренировка</h2>
             <div id="customExercises"></div>
-            <button onclick="addExercise()">➕ Добавить упражнение</button>
-            <button onclick="saveCustomWorkout()" style="margin-top:12px">💾 Сохранить</button>
-            <div id="exerciseForm" class="hidden">
+            <button onclick="addExercise()" class="secondary">➕ Добавить упражнение</button>
+            <button onclick="saveCustomWorkout()" style="margin-top:12px">💾 Сохранить тренировку</button>
+            <div id="exerciseForm" class="hidden" style="margin-top:16px;">
                 <input type="text" id="exName" placeholder="Название упражнения">
                 <input type="number" id="exSets" placeholder="Подходы">
                 <input type="number" id="exReps" placeholder="Повторения">
@@ -81,11 +277,11 @@
         <!-- Калькулятор 1ПМ -->
         <div id="calc1rm" class="section">
             <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
-            <h2>Расчёт 1ПМ (формула Эпли)</h2>
+            <h2>Расчёт 1ПМ (Эпли)</h2>
             <input type="number" id="rmWeight" placeholder="Рабочий вес (кг)">
             <input type="number" id="rmReps" placeholder="Количество повторений">
             <button onclick="calculate1RM()">Рассчитать</button>
-            <p id="rmResult"></p>
+            <p id="rmResult" style="margin-top:16px; font-weight:600; font-size:18px;"></p>
         </div>
 
         <!-- Расчёт рабочего веса -->
@@ -95,20 +291,20 @@
             <input type="number" id="oneRM" placeholder="Ваш 1ПМ (кг)">
             <input type="number" id="intensity" placeholder="Интенсивность (%)">
             <button onclick="calculateWorkingWeight()">Рассчитать</button>
-            <p id="workResult"></p>
+            <p id="workResult" style="margin-top:16px; font-weight:600; font-size:18px;"></p>
         </div>
 
         <!-- Таймер отдыха -->
         <div id="timer" class="section">
             <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
             <h2>Таймер отдыха</h2>
-            <div id="timerSet">
+            <div class="timer-row">
                 <input type="number" id="timerMinutes" placeholder="Минуты" value="2">
                 <input type="number" id="timerSeconds" placeholder="Секунды" value="30">
-                <button onclick="startTimer()">▶️ Старт</button>
-                <button onclick="stopTimer()">⏹️ Стоп</button>
-                <p id="timer-display">02:30</p>
             </div>
+            <button onclick="startTimer()">▶️ Старт</button>
+            <button onclick="stopTimer()" class="danger" style="background:#ff3b30;">⏹️ Стоп</button>
+            <div id="timer-display">02:30</div>
         </div>
 
         <!-- История -->
@@ -116,13 +312,12 @@
             <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
             <h2>История тренировок</h2>
             <div id="historyList"></div>
-            <button onclick="clearHistory()" style="margin-top:12px; background: #ff4444;">🗑️ Очистить историю</button>
+            <button onclick="clearHistory()" class="danger" style="background:#ff3b30;">🗑️ Очистить историю</button>
         </div>
     </div>
 
     <script>
         const app = document.getElementById('app');
-        // Навигация между разделами
         function navigate(sectionId) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
@@ -130,7 +325,6 @@
             if (sectionId === 'history') renderHistory();
         }
 
-        // ---------- Готовые программы ----------
         const programs = [
             { name: "Smolov Jr (жим)", desc: "Интенсивная 3-недельная программа для жима лёжа.", weeks: ["70% 6x6","75% 5x5","80% 4x4","85% 3x3","90% 2x2"] },
             { name: "Starting Strength 5×5", desc: "Классика: тяжёлые базовые упражнения 3 раза в неделю.", weeks: ["Присед 5x5","Жим 5x5","Тяга 1x5"] },
@@ -158,7 +352,6 @@
             document.getElementById('programWeeks').innerHTML = '<h3>Примерная разбивка по неделям:</h3>' + prog.weeks.map(w => `<p>${w}</p>`).join('');
         }
 
-        // ---------- Своя тренировка ----------
         let currentExercises = [];
         function addExercise() {
             document.getElementById('exerciseForm').classList.remove('hidden');
@@ -194,16 +387,14 @@
             alert('Тренировка сохранена в истории!');
         }
 
-        // ---------- Калькулятор 1ПМ ----------
         function calculate1RM() {
             const weight = parseFloat(document.getElementById('rmWeight').value);
             const reps = parseInt(document.getElementById('rmReps').value);
             if (!weight || !reps) return;
-            const oneRM = weight * (1 + reps / 30); // формула Эпли
+            const oneRM = weight * (1 + reps / 30);
             document.getElementById('rmResult').innerHTML = `Ваш приблизительный 1ПМ: <strong>${oneRM.toFixed(1)} кг</strong>`;
         }
 
-        // ---------- Рабочий вес от 1ПМ ----------
         function calculateWorkingWeight() {
             const oneRM = parseFloat(document.getElementById('oneRM').value);
             const intensity = parseFloat(document.getElementById('intensity').value);
@@ -212,7 +403,6 @@
             document.getElementById('workResult').innerHTML = `Рабочий вес (${intensity}%): <strong>${weight.toFixed(1)} кг</strong>`;
         }
 
-        // ---------- Таймер ----------
         let timerInterval;
         function startTimer() {
             clearInterval(timerInterval);
@@ -236,14 +426,13 @@
             clearInterval(timerInterval);
         }
 
-        // ---------- История ----------
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
             const list = document.getElementById('historyList');
             list.innerHTML = history.map(w => `
-                <div style="margin-bottom:12px; background:var(--tg-theme-secondary-bg-color); padding:10px; border-radius:8px;">
+                <div style="margin-bottom:12px; background:white; padding:14px; border-radius:12px; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
                     <strong>${w.date}</strong>
-                    ${w.exercises.map(e => `<div class="log-entry">${e.name}: ${e.sets}x${e.reps} @${e.weight}кг</div>`).join('')}
+                    <div style="margin-top:6px;">${w.exercises.map(e => `<div class="log-entry">${e.name}: ${e.sets}x${e.reps} @${e.weight}кг</div>`).join('')}</div>
                 </div>
             `).join('');
         }
@@ -252,9 +441,8 @@
             renderHistory();
         }
 
-        // Инициализация Telegram WebApp
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand(); // на всю высоту
+        Telegram.WebApp.expand();
     </script>
 </body>
 </html>
