@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Powerlifting Coach</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* Telegram цветовая схема */
+        :root {
+            --tg-theme-bg-color: var(--tg-theme-bg-color, #fff);
+            --tg-theme-text-color: var(--tg-theme-text-color, #222);
+            --tg-theme-hint-color: var(--tg-theme-hint-color, #aaa);
+            --tg-theme-link-color: var(--tg-theme-link-color, #2678b6);
+            --tg-theme-button-color: var(--tg-theme-button-color, #50a8eb);
+            --tg-theme-button-text-color: var(--tg-theme-button-text-color, #fff);
+            --tg-theme-secondary-bg-color: var(--tg-theme-secondary-bg-color, #f0f2f5);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); padding: 16px; }
+        h1, h2 { margin-bottom: 12px; }
+        .menu { display: flex; flex-direction: column; gap: 8px; }
+        .menu button { padding: 12px; border: none; border-radius: 10px; background: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color); font-size: 16px; text-align: left; cursor: pointer; transition: 0.2s; }
+        .menu button:hover, .menu button:active { background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); }
+        .section { display: none; }
+        .section.active { display: block; }
+        .back-btn { background: none; border: none; color: var(--tg-theme-link-color); font-size: 16px; cursor: pointer; margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+        .card { background: var(--tg-theme-secondary-bg-color); padding: 12px; border-radius: 8px; text-align: center; }
+        .card button { margin-top: 8px; padding: 6px 12px; border: none; border-radius: 6px; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); cursor: pointer; }
+        .exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--tg-theme-secondary-bg-color); border-radius: 8px; margin-bottom: 8px; }
+        input, select { padding: 8px; border: 1px solid var(--tg-theme-hint-color); border-radius: 6px; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); }
+        .hidden { display: none; }
+        #timer-display { font-size: 24px; margin: 12px 0; }
+        .log-entry { margin: 4px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Главное меню -->
+        <div id="mainMenu" class="section active">
+            <h1>🏋️ Powerlifting Coach</h1>
+            <div class="menu">
+                <button onclick="navigate('programs')">📋 Программы тренировок</button>
+                <button onclick="navigate('custom')">🛠️ Создать свою тренировку</button>
+                <button onclick="navigate('calc1rm')">🧮 Калькулятор 1ПМ</button>
+                <button onclick="navigate('calcwork')">⚖️ Расчёт рабочего веса</button>
+                <button onclick="navigate('timer')">⏱️ Таймер отдыха</button>
+                <button onclick="navigate('history')">📈 История тренировок</button>
+            </div>
+        </div>
+
+        <!-- Программы -->
+        <div id="programs" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>Выберите программу</h2>
+            <div id="programsList" class="grid"></div>
+            <div id="programDetails" class="hidden">
+                <p id="programDesc"></p>
+                <div id="programWeeks"></div>
+                <button onclick="navigate('programs')">⬅️ Все программы</button>
+            </div>
+        </div>
+
+        <!-- Своя тренировка -->
+        <div id="custom" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>Ваша тренировка</h2>
+            <div id="customExercises"></div>
+            <button onclick="addExercise()">➕ Добавить упражнение</button>
+            <button onclick="saveCustomWorkout()" style="margin-top:12px">💾 Сохранить</button>
+            <div id="exerciseForm" class="hidden">
+                <input type="text" id="exName" placeholder="Название упражнения">
+                <input type="number" id="exSets" placeholder="Подходы">
+                <input type="number" id="exReps" placeholder="Повторения">
+                <input type="number" id="exWeight" placeholder="Вес (кг)">
+                <button onclick="confirmExercise()">✅ Добавить</button>
+            </div>
+        </div>
+
+        <!-- Калькулятор 1ПМ -->
+        <div id="calc1rm" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>Расчёт 1ПМ (формула Эпли)</h2>
+            <input type="number" id="rmWeight" placeholder="Рабочий вес (кг)">
+            <input type="number" id="rmReps" placeholder="Количество повторений">
+            <button onclick="calculate1RM()">Рассчитать</button>
+            <p id="rmResult"></p>
+        </div>
+
+        <!-- Расчёт рабочего веса -->
+        <div id="calcwork" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>Рабочий вес от 1ПМ</h2>
+            <input type="number" id="oneRM" placeholder="Ваш 1ПМ (кг)">
+            <input type="number" id="intensity" placeholder="Интенсивность (%)">
+            <button onclick="calculateWorkingWeight()">Рассчитать</button>
+            <p id="workResult"></p>
+        </div>
+
+        <!-- Таймер отдыха -->
+        <div id="timer" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>Таймер отдыха</h2>
+            <div id="timerSet">
+                <input type="number" id="timerMinutes" placeholder="Минуты" value="2">
+                <input type="number" id="timerSeconds" placeholder="Секунды" value="30">
+                <button onclick="startTimer()">▶️ Старт</button>
+                <button onclick="stopTimer()">⏹️ Стоп</button>
+                <p id="timer-display">02:30</p>
+            </div>
+        </div>
+
+        <!-- История -->
+        <div id="history" class="section">
+            <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+            <h2>История тренировок</h2>
+            <div id="historyList"></div>
+            <button onclick="clearHistory()" style="margin-top:12px; background: #ff4444;">🗑️ Очистить историю</button>
+        </div>
+    </div>
+
+    <script>
+        const app = document.getElementById('app');
+        // Навигация между разделами
+        function navigate(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            if (sectionId === 'programs') renderPrograms();
+            if (sectionId === 'history') renderHistory();
+        }
+
+        // ---------- Готовые программы ----------
+        const programs = [
+            { name: "Smolov Jr (жим)", desc: "Интенсивная 3-недельная программа для жима лёжа.", weeks: ["70% 6x6","75% 5x5","80% 4x4","85% 3x3","90% 2x2"] },
+            { name: "Starting Strength 5×5", desc: "Классика: тяжёлые базовые упражнения 3 раза в неделю.", weeks: ["Присед 5x5","Жим 5x5","Тяга 1x5"] },
+            { name: "Madcow 5×5", desc: "Средний уровень, линейная прогрессия каждую неделю.", weeks: ["Пн: присед 5x5","Ср: жим 5x5","Пт: тяга 1x5"] },
+            { name: "Немецкий объёмный тренинг (GVT)", desc: "10 подходов по 10 повторений с 60% от 1ПМ.", weeks: ["10x10 @60%"] }
+        ];
+
+        function renderPrograms() {
+            const list = document.getElementById('programsList');
+            list.innerHTML = programs.map(p => `
+                <div class="card">
+                    <strong>${p.name}</strong>
+                    <p>${p.desc}</p>
+                    <button onclick="selectProgram('${p.name}')">Выбрать</button>
+                </div>
+            `).join('');
+        }
+
+        function selectProgram(name) {
+            const prog = programs.find(p => p.name === name);
+            if (!prog) return;
+            document.getElementById('programsList').classList.add('hidden');
+            document.getElementById('programDetails').classList.remove('hidden');
+            document.getElementById('programDesc').innerText = prog.desc;
+            document.getElementById('programWeeks').innerHTML = '<h3>Примерная разбивка по неделям:</h3>' + prog.weeks.map(w => `<p>${w}</p>`).join('');
+        }
+
+        // ---------- Своя тренировка ----------
+        let currentExercises = [];
+        function addExercise() {
+            document.getElementById('exerciseForm').classList.remove('hidden');
+        }
+        function confirmExercise() {
+            const name = document.getElementById('exName').value.trim();
+            const sets = document.getElementById('exSets').value;
+            const reps = document.getElementById('exReps').value;
+            const weight = document.getElementById('exWeight').value;
+            if (!name || !sets || !reps || !weight) return alert('Заполните все поля');
+            currentExercises.push({ name, sets, reps, weight });
+            document.getElementById('exerciseForm').classList.add('hidden');
+            document.getElementById('exName').value = '';
+            document.getElementById('exSets').value = '';
+            document.getElementById('exReps').value = '';
+            document.getElementById('exWeight').value = '';
+            renderCustomExercises();
+        }
+        function renderCustomExercises() {
+            const container = document.getElementById('customExercises');
+            container.innerHTML = currentExercises.map((ex,i) => `
+                <div class="exercise-item">
+                    <div>${ex.name} | ${ex.sets}x${ex.reps} @${ex.weight}кг</div>
+                    <button onclick="currentExercises.splice(${i},1); renderCustomExercises()">🗑️</button>
+                </div>
+            `).join('');
+        }
+        function saveCustomWorkout() {
+            const workout = { date: new Date().toLocaleString(), exercises: currentExercises };
+            const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
+            history.unshift(workout);
+            localStorage.setItem('powerHistory', JSON.stringify(history));
+            alert('Тренировка сохранена в истории!');
+        }
+
+        // ---------- Калькулятор 1ПМ ----------
+        function calculate1RM() {
+            const weight = parseFloat(document.getElementById('rmWeight').value);
+            const reps = parseInt(document.getElementById('rmReps').value);
+            if (!weight || !reps) return;
+            const oneRM = weight * (1 + reps / 30); // формула Эпли
+            document.getElementById('rmResult').innerHTML = `Ваш приблизительный 1ПМ: <strong>${oneRM.toFixed(1)} кг</strong>`;
+        }
+
+        // ---------- Рабочий вес от 1ПМ ----------
+        function calculateWorkingWeight() {
+            const oneRM = parseFloat(document.getElementById('oneRM').value);
+            const intensity = parseFloat(document.getElementById('intensity').value);
+            if (!oneRM || !intensity) return;
+            const weight = (oneRM * intensity) / 100;
+            document.getElementById('workResult').innerHTML = `Рабочий вес (${intensity}%): <strong>${weight.toFixed(1)} кг</strong>`;
+        }
+
+        // ---------- Таймер ----------
+        let timerInterval;
+        function startTimer() {
+            clearInterval(timerInterval);
+            let mins = parseInt(document.getElementById('timerMinutes').value) || 0;
+            let secs = parseInt(document.getElementById('timerSeconds').value) || 0;
+            let total = mins * 60 + secs;
+            if (total <= 0) return;
+            timerInterval = setInterval(() => {
+                if (total <= 0) {
+                    clearInterval(timerInterval);
+                    try { Telegram.WebApp.HapticFeedback.notificationOccurred('success'); } catch(e) {}
+                    return;
+                }
+                total--;
+                const m = Math.floor(total / 60);
+                const s = total % 60;
+                document.getElementById('timer-display').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
+        }
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // ---------- История ----------
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
+            const list = document.getElementById('historyList');
+            list.innerHTML = history.map(w => `
+                <div style="margin-bottom:12px; background:var(--tg-theme-secondary-bg-color); padding:10px; border-radius:8px;">
+                    <strong>${w.date}</strong>
+                    ${w.exercises.map(e => `<div class="log-entry">${e.name}: ${e.sets}x${e.reps} @${e.weight}кг</div>`).join('')}
+                </div>
+            `).join('');
+        }
+        function clearHistory() {
+            localStorage.removeItem('powerHistory');
+            renderHistory();
+        }
+
+        // Инициализация Telegram WebApp
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand(); // на всю высоту
+    </script>
+</body>
+</html>
