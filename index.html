@@ -7,55 +7,61 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #0a1628;
-            --card: #132239;
-            --text: #eaf0fb;
-            --accent: #1e88e5;
-            --accent-hover: #1565c0;
-            --danger: #e53935;
-            --secondary: #1f2a3f;
-            --nav-bg: #0d1b30;
-            --border: #2d3d52;
-            --shadow: 0 2px 6px rgba(0,0,0,0.3);
+            --bg-start: #0a0015;
+            --bg-end: #1a0835;
+            --card-bg: rgba(20, 10, 40, 0.75);
+            --card-border: rgba(180, 130, 255, 0.25);
+            --text: #eae0ff;
+            --text-secondary: #c0b0e0;
+            --accent: #b983ff;
+            --accent-glow: 0 0 18px rgba(185, 131, 255, 0.6);
+            --danger: #ff4d6d;
+            --secondary: rgba(45, 27, 78, 0.8);
+            --nav-bg: rgba(10, 0, 20, 0.9);
+            --border: #4a2b6b;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             --transition: 0.2s ease;
-        }
-        .light-theme {
-            --bg: #f5f7fa;
-            --card: #ffffff;
-            --text: #1a1a2e;
-            --accent: #0a84ff;
-            --accent-hover: #0066cc;
-            --danger: #e53935;
-            --secondary: #e8edf2;
-            --nav-bg: #ffffff;
-            --border: #d1d9e0;
-            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --border-radius: 16px;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            background-attachment: fixed;
             color: var(--text);
-            padding: 16px 16px 80px 16px;
+            padding: 16px 16px 90px 16px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            transition: background var(--transition), color var(--transition);
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(185, 131, 255, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(130, 80, 200, 0.1) 0%, transparent 50%);
+            z-index: -1;
         }
         h1 {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 30px;
+            font-weight: 800;
             margin-bottom: 20px;
             text-align: center;
+            background: linear-gradient(to right, #d4b0ff, #9d6eff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(180, 130, 255, 0.4));
+            letter-spacing: -0.5px;
         }
         h2 {
             font-size: 22px;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 14px;
+            color: #d4b0ff;
         }
         .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.25s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         .back-btn {
             background: none;
             border: none;
@@ -68,40 +74,44 @@
             align-items: center;
             gap: 6px;
             padding: 8px 0;
+            text-shadow: 0 0 6px rgba(185, 131, 255, 0.5);
         }
         .btn {
             background: var(--secondary);
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius);
+            padding: 14px 16px;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text);
             cursor: pointer;
-            transition: transform 0.1s, background var(--transition), color var(--transition);
+            transition: all var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 6px;
             user-select: none;
+            backdrop-filter: blur(12px);
             box-shadow: var(--shadow);
-            width: 100%;
         }
         .btn:active {
-            transform: scale(0.96);
-            background: var(--accent);
-            color: white;
+            transform: scale(0.97);
+            background: rgba(185, 131, 255, 0.3);
+            border-color: var(--accent);
+            box-shadow: var(--accent-glow);
         }
         .btn.accent {
-            background: var(--accent);
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
             color: white;
-            font-weight: 600;
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
         }
-        .btn.accent:active { background: var(--accent-hover); }
-        .btn.danger { background: var(--danger); color: white; }
-        .btn.danger:active { background: #c62828; }
-        .btn.small { padding: 8px 14px; font-size: 14px; }
+        .btn.accent:active { background: linear-gradient(135deg, #6d28d9, #9333ea); }
+        .btn.danger { background: rgba(255, 77, 109, 0.3); border-color: #ff4d6d; }
+        .btn.danger:active { background: rgba(255, 77, 109, 0.5); }
+        .btn.small { padding: 10px 16px; font-size: 14px; }
 
         .grid-2 {
             display: grid;
@@ -115,22 +125,25 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: var(--secondary);
-            border-radius: 12px;
+            background: rgba(25, 12, 45, 0.7);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius);
             padding: 12px 8px;
-            font-size: 15px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text);
             cursor: pointer;
-            transition: transform 0.1s, background var(--transition), color var(--transition);
+            transition: all var(--transition);
             user-select: none;
-            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
             text-align: center;
+            box-shadow: var(--shadow);
         }
         .square-btn:active {
-            transform: scale(0.96);
-            background: var(--accent);
-            color: white;
+            transform: scale(0.97);
+            background: rgba(120, 70, 200, 0.4);
+            border-color: var(--accent);
+            box-shadow: var(--accent-glow);
         }
         .square-btn .emoji {
             font-size: 32px;
@@ -138,17 +151,18 @@
         }
 
         .card {
-            background: var(--card);
-            border-radius: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--border-radius);
             padding: 16px;
             margin-bottom: 12px;
+            backdrop-filter: blur(16px);
             box-shadow: var(--shadow);
-            transition: background var(--transition), box-shadow var(--transition);
         }
-        .card strong { display: block; font-size: 17px; margin-bottom: 6px; }
-        .card p { font-size: 14px; opacity: 0.8; line-height: 1.4; margin-bottom: 10px; }
+        .card strong { display: block; font-size: 17px; margin-bottom: 6px; color: #d4b0ff; }
+        .card p { font-size: 14px; color: var(--text-secondary); line-height: 1.4; margin-bottom: 10px; }
         input, select {
-            background: var(--bg);
+            background: rgba(20, 10, 40, 0.7);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 12px;
@@ -158,17 +172,17 @@
             margin-bottom: 10px;
             outline: none;
             transition: border var(--transition);
+            backdrop-filter: blur(8px);
         }
-        input:focus, select:focus { border-color: var(--accent); }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(185, 131, 255, 0.3); }
         .exercise-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--secondary);
-            border-radius: 8px;
+            background: rgba(30, 18, 55, 0.6);
+            border-radius: 10px;
             padding: 10px 14px;
             margin-bottom: 6px;
-            font-size: 14px;
         }
         .exercise-item button {
             background: var(--danger);
@@ -179,11 +193,12 @@
             cursor: pointer;
         }
         #timer-display {
-            font-size: 44px;
-            font-weight: 700;
+            font-size: 48px;
+            font-weight: 800;
             text-align: center;
-            margin: 16px 0;
-            color: var(--accent);
+            margin: 20px 0;
+            color: #d4b0ff;
+            text-shadow: 0 0 20px rgba(180, 150, 255, 0.6);
         }
         .log-entry { font-size: 14px; margin: 4px 0; }
         .hidden { display: none !important; }
@@ -198,43 +213,31 @@
             display: flex;
             justify-content: space-around;
             padding: 8px 0 12px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            backdrop-filter: blur(20px);
             z-index: 100;
-            transition: background var(--transition);
         }
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 12px;
-            color: var(--text);
-            opacity: 0.7;
+            font-size: 11px;
+            color: #b0a0d0;
             cursor: pointer;
-            transition: opacity var(--transition), transform var(--transition);
-            user-select: none;
+            transition: all var(--transition);
         }
-        .nav-item.active { opacity: 1; color: var(--accent); transform: translateY(-2px); }
+        .nav-item.active { color: var(--accent); transform: translateY(-2px); text-shadow: 0 0 8px rgba(185, 131, 255, 0.7); }
         .nav-item span { font-size: 22px; margin-bottom: 2px; }
 
         .search-box { margin-bottom: 16px; }
         .search-box input { padding: 12px; }
-        .search-results { background: var(--card); border-radius: 10px; margin-top: 4px; }
+        .search-results { background: var(--card-bg); border-radius: 10px; margin-top: 4px; backdrop-filter: blur(16px); }
         .search-results .result-item {
             padding: 14px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: background var(--transition);
         }
-        .search-results .result-item:active { background: var(--secondary); }
-
-        canvas#progressChart {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            background: var(--card);
-            border-radius: 12px;
-            margin: 12px 0;
-        }
+        .search-results .result-item:active { background: rgba(100, 50, 150, 0.3); }
 
         .option-row {
             display: flex;
@@ -243,32 +246,44 @@
             padding: 14px 0;
             border-bottom: 1px solid var(--border);
         }
-        .option-row span { font-size: 16px; }
         .toggle-switch {
             position: relative;
-            width: 48px;
-            height: 26px;
-            background: var(--secondary);
-            border-radius: 13px;
+            width: 52px;
+            height: 28px;
+            background: #3a2560;
+            border-radius: 14px;
             cursor: pointer;
             transition: background var(--transition);
         }
-        .toggle-switch.active {
-            background: var(--accent);
-        }
+        .toggle-switch.active { background: #7c3aed; }
         .toggle-switch::after {
             content: '';
             position: absolute;
             top: 3px;
             left: 3px;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             background: white;
             border-radius: 50%;
             transition: left var(--transition);
         }
-        .toggle-switch.active::after {
-            left: 25px;
+        .toggle-switch.active::after { left: 27px; }
+
+        canvas#progressChart {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+        .macro-box {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(30, 18, 55, 0.5);
+            border-radius: 10px;
+            padding: 10px;
+            margin: 8px 0;
         }
     </style>
 </head>
@@ -285,10 +300,10 @@
         <div class="grid-2" id="menuGrid">
             <div class="square-btn" onclick="navigate('programs')"><span class="emoji">📋</span>Программы</div>
             <div class="square-btn" onclick="navigate('custom')"><span class="emoji">🛠️</span>Свой сплит</div>
+            <div class="square-btn" onclick="navigate('nutrition')"><span class="emoji">🍽️</span>Питание</div>
             <div class="square-btn" onclick="navigate('calc1rm')"><span class="emoji">🧮</span>Макс. вес</div>
             <div class="square-btn" onclick="navigate('calcwork')"><span class="emoji">⚖️</span>Рабочий вес</div>
             <div class="square-btn" onclick="navigate('timer')"><span class="emoji">⏱️</span>Таймер</div>
-            <div class="square-btn" onclick="navigate('history')"><span class="emoji">📈</span>История</div>
         </div>
     </div>
 
@@ -300,12 +315,12 @@
         <div id="programDetails" class="hidden"></div>
     </div>
 
-    <!-- Конструктор сплита -->
+    <!-- Свой сплит -->
     <div id="custom" class="section">
         <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
         <h2>Конструктор сплита</h2>
         <div id="splitDays"></div>
-        <button class="btn accent" onclick="addDay()" style="margin-bottom:12px;">➕ Добавить день</button>
+        <button class="btn accent" onclick="addDay()">➕ Добавить день</button>
         <button id="saveSplitBtn" class="btn accent" onclick="saveSplit()">💾 Сохранить сплит</button>
         <div id="exerciseForm" class="hidden" style="margin-top:12px;">
             <input type="text" id="newExName" placeholder="Упражнение" list="exerciseSuggestions">
@@ -330,24 +345,65 @@
         </div>
     </div>
 
-    <!-- Калькулятор макс. веса -->
+    <!-- Питание -->
+    <div id="nutrition" class="section">
+        <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
+        <h2>🍽️ Питание</h2>
+        <div class="card">
+            <strong>Калькулятор калорий</strong>
+            <select id="goal">
+                <option value="lose">Похудение (-20%)</option>
+                <option value="maintain" selected>Поддержание веса</option>
+                <option value="gain">Набор массы (+20%)</option>
+            </select>
+            <input type="number" id="age" placeholder="Возраст (лет)">
+            <input type="number" id="weight" placeholder="Вес (кг)">
+            <input type="number" id="height" placeholder="Рост (см)">
+            <select id="activity">
+                <option value="1.2">Сидячий образ жизни</option>
+                <option value="1.375" selected>Лёгкая активность (1-3 раза в неделю)</option>
+                <option value="1.55">Умеренная активность (3-5 раз)</option>
+                <option value="1.725">Высокая активность (6-7 раз)</option>
+                <option value="1.9">Экстремальная активность</option>
+            </select>
+            <button class="btn accent" onclick="calculateNutrition()">Рассчитать</button>
+            <div id="nutritionResult" style="margin-top:12px; font-weight:600; color:#d4b0ff;"></div>
+        </div>
+
+        <div class="card">
+            <strong>📝 Дневник питания</strong>
+            <div id="foodEntries" style="margin-bottom:10px;"></div>
+            <input type="text" id="foodName" placeholder="Продукт">
+            <div class="row" style="display:flex; gap:8px;">
+                <input type="number" id="foodKcal" placeholder="Ккал" style="flex:1">
+                <input type="number" id="foodProtein" placeholder="Белки" style="flex:1">
+                <input type="number" id="foodCarbs" placeholder="Углеводы" style="flex:1">
+                <input type="number" id="foodFat" placeholder="Жиры" style="flex:1">
+            </div>
+            <button class="btn accent small" onclick="addFood()">➕ Добавить</button>
+            <div id="dailySummary" class="macro-box" style="margin-top:10px;"></div>
+            <button class="btn danger small" onclick="clearFoodDiary()" style="margin-top:8px;">🗑️ Очистить дневник</button>
+        </div>
+    </div>
+
+    <!-- Максимальный вес -->
     <div id="calc1rm" class="section">
         <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
         <h2>Максимальный вес</h2>
         <input type="number" id="rmWeight" placeholder="Рабочий вес (кг)">
         <input type="number" id="rmReps" placeholder="Повторения">
         <button class="btn accent" onclick="calculateMaxWeight()">Рассчитать</button>
-        <p id="rmResult" style="margin-top:16px; font-weight:600; font-size:18px;"></p>
+        <p id="rmResult" style="margin-top:16px; font-weight:600; font-size:18px; color:#d4b0ff;"></p>
     </div>
 
-    <!-- Расчёт рабочего веса -->
+    <!-- Рабочий вес -->
     <div id="calcwork" class="section">
         <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
         <h2>Рабочий вес</h2>
         <input type="number" id="oneRM" placeholder="Максимальный вес (1ПМ), кг">
         <input type="number" id="targetReps" placeholder="Желаемые повторения">
         <button class="btn accent" onclick="calculateWorkingWeight()">Рассчитать</button>
-        <p id="workResult" style="margin-top:16px; font-weight:600; font-size:18px;"></p>
+        <p id="workResult" style="margin-top:16px; font-weight:600; font-size:18px; color:#d4b0ff;"></p>
     </div>
 
     <!-- Таймер -->
@@ -365,18 +421,16 @@
         <div id="timer-display">02:30</div>
     </div>
 
-    <!-- История + график -->
+    <!-- История -->
     <div id="history" class="section">
         <button class="back-btn" onclick="navigate('mainMenu')">⬅️ Назад</button>
         <h2>История тренировок</h2>
-        <div id="historyView">
-            <div id="historyList"></div>
-            <button class="btn accent small" onclick="switchToGraph()" style="margin-top:12px;">📈 Показать график прогресса</button>
-            <button class="btn danger" onclick="clearHistory()" style="margin-top:12px;">🗑️ Очистить историю</button>
-        </div>
-        <div id="graphView" class="hidden">
+        <div id="historyList"></div>
+        <button class="btn accent small" onclick="switchToGraph()" style="margin-top:12px;">📈 Показать график прогресса</button>
+        <button class="btn danger" onclick="clearHistory()" style="margin-top:12px;">🗑️ Очистить историю</button>
+        <div id="graphView" class="hidden" style="margin-top:12px;">
             <canvas id="progressChart" width="350" height="200"></canvas>
-            <button class="btn small" onclick="switchToHistory()" style="margin-top:12px;">⬅️ Назад к истории</button>
+            <button class="btn small" onclick="switchToHistory()">⬅️ Назад к истории</button>
         </div>
     </div>
 
@@ -388,7 +442,7 @@
             <span>🌙 Тёмная тема</span>
             <div id="themeToggle" class="toggle-switch active" onclick="toggleTheme()"></div>
         </div>
-        <p style="margin-top:20px; opacity:0.7;">Powerlifting Coach v1.0</p>
+        <p style="margin-top:20px; color:#b0a0d0;">Powerlifting Coach v1.0</p>
     </div>
 </div>
 
@@ -396,7 +450,7 @@
 <div class="bottom-nav">
     <div class="nav-item active" onclick="navigate('mainMenu')"><span>🏠</span>Главная</div>
     <div class="nav-item" onclick="navigate('programs')"><span>📋</span>Прогр.</div>
-    <div class="nav-item" onclick="navigate('custom')"><span>🛠️</span>Сплит</div>
+    <div class="nav-item" onclick="navigate('nutrition')"><span>🍽️</span>Питание</div>
     <div class="nav-item" onclick="navigate('timer')"><span>⏱️</span>Таймер</div>
     <div class="nav-item" onclick="navigate('history')"><span>📈</span>История</div>
     <div class="nav-item" onclick="navigate('options')"><span>⚙️</span>Опции</div>
@@ -405,19 +459,22 @@
 <script>
     let currentDayIndex = null;
     let currentSplit = { days: [] };
+    let foodDiary = JSON.parse(localStorage.getItem('foodDiary') || '[]');
+    let historyData = JSON.parse(localStorage.getItem('powerHistory') || '[]');
 
     function navigate(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        const map = { mainMenu:0, programs:1, custom:2, timer:3, history:4, options:5 };
+        const map = { mainMenu:0, programs:1, nutrition:2, timer:3, history:4, options:5 };
         if (map[id] !== undefined) {
             document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
         }
         if (id === 'mainMenu') { document.getElementById('searchInput').value = ''; document.getElementById('searchResults').classList.add('hidden'); }
         if (id === 'programs') renderPrograms();
-        if (id === 'history') { renderHistory(); switchToHistory(); } // показывать список
+        if (id === 'history') { renderHistory(); switchToHistory(); }
         if (id === 'custom') renderSplit();
+        if (id === 'nutrition') { renderFoodDiary(); renderDailySummary(); }
         if (id === 'options') updateThemeToggle();
     }
 
@@ -428,6 +485,7 @@
         const functions = [
             { name: 'Программы тренировок', section: 'programs' },
             { name: 'Свой сплит', section: 'custom' },
+            { name: 'Питание', section: 'nutrition' },
             { name: 'Максимальный вес', section: 'calc1rm' },
             { name: 'Рабочий вес', section: 'calcwork' },
             { name: 'Таймер', section: 'timer' },
@@ -439,7 +497,6 @@
         results.classList.remove('hidden');
     }
 
-    // Тема
     const themeToggleEl = document.getElementById('themeToggle');
     function toggleTheme() {
         document.body.classList.toggle('light-theme');
@@ -510,7 +567,7 @@
         document.getElementById('programDetails').innerHTML = html;
     }
 
-    // Конструктор сплита
+    // Сплит
     function addDay() {
         const dayName = prompt('Название дня (например, Пн или Верх тела):', 'День ' + (currentSplit.days.length+1));
         if (!dayName) return;
@@ -533,7 +590,6 @@
                 <button class="btn danger small" onclick="deleteDay(${idx})">🗑️ Удалить день</button>
             </div>
         `).join('');
-        document.getElementById('saveSplitBtn').classList.remove('hidden');
     }
 
     function openExerciseForm(dayIdx) {
@@ -563,10 +619,79 @@
 
     function saveSplit() {
         if (currentSplit.days.length === 0) return alert('Добавьте хотя бы один день');
-        const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
-        history.unshift({ date: new Date().toLocaleString(), type: 'custom', days: currentSplit.days });
-        localStorage.setItem('powerHistory', JSON.stringify(history));
+        historyData.unshift({ date: new Date().toLocaleString(), type: 'custom', days: currentSplit.days });
+        localStorage.setItem('powerHistory', JSON.stringify(historyData));
         alert('Сплит сохранён в истории!');
+    }
+
+    // Питание
+    function calculateNutrition() {
+        const age = parseInt(document.getElementById('age').value);
+        const weight = parseFloat(document.getElementById('weight').value);
+        const height = parseFloat(document.getElementById('height').value);
+        const activity = parseFloat(document.getElementById('activity').value);
+        const goal = document.getElementById('goal').value;
+        if (!age || !weight || !height) return;
+        const bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+        const tdee = bmr * activity;
+        let target;
+        if (goal === 'lose') target = tdee * 0.8;
+        else if (goal === 'gain') target = tdee * 1.2;
+        else target = tdee;
+        document.getElementById('nutritionResult').innerHTML = `
+            BMR: ${bmr.toFixed(0)} ккал<br>
+            TDEE: ${tdee.toFixed(0)} ккал<br>
+            Цель: ${target.toFixed(0)} ккал/день
+        `;
+    }
+
+    function addFood() {
+        const name = document.getElementById('foodName').value.trim();
+        const kcal = parseFloat(document.getElementById('foodKcal').value);
+        const protein = parseFloat(document.getElementById('foodProtein').value) || 0;
+        const carbs = parseFloat(document.getElementById('foodCarbs').value) || 0;
+        const fat = parseFloat(document.getElementById('foodFat').value) || 0;
+        if (!name || !kcal) return;
+        foodDiary.push({ name, kcal, protein, carbs, fat, date: new Date().toLocaleDateString() });
+        localStorage.setItem('foodDiary', JSON.stringify(foodDiary));
+        renderFoodDiary();
+        renderDailySummary();
+        document.getElementById('foodName').value = '';
+        document.getElementById('foodKcal').value = '';
+        document.getElementById('foodProtein').value = '';
+        document.getElementById('foodCarbs').value = '';
+        document.getElementById('foodFat').value = '';
+    }
+
+    function renderFoodDiary() {
+        const container = document.getElementById('foodEntries');
+        const today = new Date().toLocaleDateString();
+        const todayFoods = foodDiary.filter(f => f.date === today);
+        container.innerHTML = todayFoods.map(f => `
+            <div class="exercise-item">
+                <span>${f.name} - ${f.kcal} ккал (Б:${f.protein} У:${f.carbs} Ж:${f.fat})</span>
+            </div>
+        `).join('');
+    }
+
+    function renderDailySummary() {
+        const today = new Date().toLocaleDateString();
+        const todayFoods = foodDiary.filter(f => f.date === today);
+        const sum = (key) => todayFoods.reduce((s, f) => s + (f[key] || 0), 0);
+        document.getElementById('dailySummary').innerHTML = `
+            <span>Сегодня:</span>
+            <span>🔥 ${sum('kcal').toFixed(0)} ккал</span>
+            <span>🥩 ${sum('protein').toFixed(1)}</span>
+            <span>🍞 ${sum('carbs').toFixed(1)}</span>
+            <span>🧈 ${sum('fat').toFixed(1)}</span>
+        `;
+    }
+
+    function clearFoodDiary() {
+        foodDiary = [];
+        localStorage.removeItem('foodDiary');
+        renderFoodDiary();
+        renderDailySummary();
     }
 
     // Калькуляторы
@@ -602,9 +727,8 @@
 
     // История и график
     function renderHistory() {
-        const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
         const list = document.getElementById('historyList');
-        list.innerHTML = history.map(entry => {
+        list.innerHTML = historyData.map(entry => {
             if (entry.days) {
                 let daysHtml = entry.days.map(d => `<div><em>${d.name}</em><br/>${d.exercises.map(ex => `${ex.name} ${ex.sets}x${ex.reps} @${ex.weight}кг`).join('<br/>')}</div>`).join('<br/>');
                 return `<div class="card"><strong>${entry.date}</strong><br/>${daysHtml}</div>`;
@@ -616,14 +740,14 @@
     }
 
     function switchToGraph() {
-        document.getElementById('historyView').classList.add('hidden');
         document.getElementById('graphView').classList.remove('hidden');
+        document.getElementById('historyList').classList.add('hidden');
         drawProgressChart();
     }
 
     function switchToHistory() {
         document.getElementById('graphView').classList.add('hidden');
-        document.getElementById('historyView').classList.remove('hidden');
+        document.getElementById('historyList').classList.remove('hidden');
     }
 
     function drawProgressChart() {
@@ -631,11 +755,8 @@
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const history = JSON.parse(localStorage.getItem('powerHistory') || '[]');
-        // Соберём пары дата-тоннаж (сумма вес*повторения по упражнениям) для простоты
         let points = [];
-        history.forEach(entry => {
+        historyData.forEach(entry => {
             let tonnage = 0;
             if (entry.exercises) {
                 entry.exercises.forEach(ex => {
@@ -654,72 +775,59 @@
                     });
                 });
             }
-            if (tonnage > 0) {
-                points.unshift({ date: entry.date, tonnage });
-            }
+            if (tonnage > 0) points.unshift({ date: entry.date, tonnage });
         });
-
         if (points.length === 0) {
-            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text').trim() || '#eaf0fb';
+            ctx.fillStyle = '#b0a0d0';
             ctx.font = '14px sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('Нет данных для графика', canvas.width/2, canvas.height/2);
             return;
         }
-
-        const maxTonnage = Math.max(...points.map(p => p.tonnage));
-        const minTonnage = Math.min(...points.map(p => p.tonnage));
-        const range = maxTonnage - minTonnage || 1;
+        const maxVal = Math.max(...points.map(p => p.tonnage));
+        const minVal = Math.min(...points.map(p => p.tonnage));
+        const range = maxVal - minVal || 1;
         const w = canvas.width;
         const h = canvas.height;
-        const padding = 30;
-        const graphWidth = w - padding * 2;
-        const graphHeight = h - padding * 2;
-        const stepX = graphWidth / (points.length - 1 || 1);
-
+        const pad = 30;
+        const gW = w - pad*2;
+        const gH = h - pad*2;
+        const stepX = gW / (points.length - 1 || 1);
         ctx.beginPath();
-        ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#1e88e5';
+        ctx.strokeStyle = '#b983ff';
         ctx.lineWidth = 2;
-        ctx.fillStyle = 'rgba(30, 136, 229, 0.2)';
-
-        let first = true;
-        const startX = padding;
-        points.forEach((point, i) => {
-            const x = startX + i * stepX;
-            const y = padding + graphHeight - ((point.tonnage - minTonnage) / range) * graphHeight;
-            if (first) {
-                ctx.moveTo(x, y);
-                first = false;
-            } else {
-                ctx.lineTo(x, y);
-            }
+        ctx.fillStyle = 'rgba(185, 131, 255, 0.2)';
+        points.forEach((p, i) => {
+            const x = pad + i*stepX;
+            const y = pad + gH - ((p.tonnage - minVal)/range)*gH;
+            if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
         });
         ctx.stroke();
-        // заливка под графиком
-        ctx.lineTo(startX + (points.length-1)*stepX, padding + graphHeight);
-        ctx.lineTo(startX, padding + graphHeight);
+        ctx.lineTo(pad + (points.length-1)*stepX, pad+gH);
+        ctx.lineTo(pad, pad+gH);
         ctx.closePath();
         ctx.fill();
-
-        // подписи дат
-        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text').trim() || '#eaf0fb';
+        ctx.fillStyle = '#b0a0d0';
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        points.forEach((point, i) => {
-            const x = startX + i * stepX;
-            ctx.fillText(point.date.split(',')[0] || '', x, h - 5);
+        points.forEach((p,i) => {
+            const x = pad + i*stepX;
+            ctx.fillText(p.date.split(',')[0] || '', x, h-5);
         });
     }
 
     function clearHistory() {
-        localStorage.removeItem('powerHistory');
+        historyData.length = 0;
+        localStorage.setItem('powerHistory', '[]');
         renderHistory();
+        document.getElementById('graphView').classList.add('hidden');
+        document.getElementById('historyList').classList.remove('hidden');
     }
 
     Telegram.WebApp.ready();
     Telegram.WebApp.expand();
-    // инициализация
     updateThemeToggle();
+    renderPrograms();
 </script>
 </body>
 </html>
